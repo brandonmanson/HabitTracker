@@ -12,6 +12,7 @@
 @interface DetailViewController : UIViewController
 
 @property(nonatomic,strong)Habit *habit;
+@property(strong, nonatomic)NSIndexPath *indexInTableViewToUpdate;
 
 - (void)updateLabels;
 

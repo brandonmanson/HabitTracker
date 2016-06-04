@@ -12,7 +12,12 @@
 @interface HabitTableTableViewController : UITableViewController
 
 @property(strong, nonatomic)NSArray *habits;
+@property(strong, nonatomic)NSIndexPath *indexOfHabitToUpdate;
 
 - (void)createHabitsArray;
+- (void)updateUIOfCell:(UITableViewCell *)cell withPropertiesOfHabit:(Habit *)habit;
+- (void)updateForCompletionOfHabit:(Habit *)habit inCell:(UITableViewCell *)cell;
+- (void)updateForIncompletionOfHabit:(Habit *)habit inCell:(UITableViewCell *)cell;
+
 
 @end

@@ -38,6 +38,32 @@
     _habits = [NSArray arrayWithObjects:habitOne, habitTwo, habitThree, nil];
 }
 
+- (void)updateForCompletionOfHabit:(Habit *)habit inCell:(UITableViewCell *)cell {
+    cell.backgroundColor = [UIColor greenColor];
+    cell.textLabel.textColor = [UIColor blackColor];
+    
+    NSDictionary *attributes = @{NSStrikethroughStyleAttributeName: [NSNumber numberWithInt:NSUnderlineStyleSingle]};
+    NSAttributedString *completedHabitText = [[NSAttributedString alloc]initWithString:habit.habitName attributes:attributes];
+    cell.textLabel.attributedText = completedHabitText;
+}
+
+- (void)updateForIncompletionOfHabit:(Habit *)habit inCell:(UITableViewCell *)cell {
+    cell.backgroundColor = [UIColor redColor];
+    cell.textLabel.textColor = [UIColor whiteColor];
+    
+    cell.textLabel.attributedText = nil;
+    cell.textLabel.text = habit.habitName;
+}
+
+- (void)updateUIOfCell:(UITableViewCell *)cell withPropertiesOfHabit:(Habit *)habit {
+    cell.textLabel.text = habit.habitName;
+    if (habit.completionStatus) {
+        [self updateForCompletionOfHabit:habit inCell:cell];
+    } else {
+        [self updateForIncompletionOfHabit:habit inCell:cell];
+    }
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -53,6 +79,7 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
     Habit *habitInCell = [_habits objectAtIndex:indexPath.row];
     cell.textLabel.text = habitInCell.habitName;
+    [self updateUIOfCell:cell withPropertiesOfHabit:habitInCell];
     return cell;
 }
 
@@ -93,12 +120,22 @@
 
 #pragma mark - Navigation
 
+- (IBAction)unwindToTableView:(UIStoryboardSegue *)segue {
+        DetailViewController *habitDetailViewController = (DetailViewController *)segue.sourceViewController;
+        _indexOfHabitToUpdate = habitDetailViewController.indexInTableViewToUpdate;
+        Habit *habitToUpdate = [_habits objectAtIndex:_indexOfHabitToUpdate.row];
+        habitToUpdate.completionStatus = YES;
+        [self.tableView reloadData];
+        NSLog(@"reloadData called");
+}
+
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
     DetailViewController *vc = [segue destinationViewController];
     NSIndexPath *selectedRowIndex = [self.tableView indexPathForSelectedRow];
-    vc.habit = [_habits objectAtIndex:selectedRowIndex.row];    
+    vc.habit = [_habits objectAtIndex:selectedRowIndex.row];
+    vc.indexInTableViewToUpdate = selectedRowIndex;
     
 }
 
